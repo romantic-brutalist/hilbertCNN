@@ -14,6 +14,8 @@ import os
 import datetime
 import websocket
 import json
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 device = torch.device('cpu')
 print(device)
 os.environ["COMET_API_KEY"] = "uM0HPEvEu6OyX3dTEuB4Fihgz"
@@ -101,7 +103,8 @@ class LiveTrader():
         self.trade_available=True
         print("Initialized")
     def send_slack(self,msg):
-        webhook_url = "https://hooks.slack.com/services/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"
+        client = WebClient(token="xoxb-2444560597751-2482975908464-pgSw5TUmE3A8tRm8NmyiJiFJ")
+
         slack_data = {
             "text": "New Action!!!",
             "attachments": [
@@ -109,10 +112,7 @@ class LiveTrader():
             ]
         }
 
-        response = requests.post(
-            webhook_url, data=json.dumps(slack_data),
-            headers={'Content-Type': 'application/json'}
-        )
+        client.chat_postMessage(channel="#"+"hilbertcnn_live", text=slack_data["text"],attachments=slack_data["attachments"])
 
     def live_call(self,_timestamp,_open,_high,_low,_close):
         #print(f"Open Position is {self.open_position}")
