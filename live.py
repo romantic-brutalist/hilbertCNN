@@ -14,7 +14,7 @@ import os
 import datetime
 import websocket
 import json
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device('cpu')
 print(device)
 os.environ["COMET_API_KEY"] = "uM0HPEvEu6OyX3dTEuB4Fihgz"
 
@@ -71,7 +71,7 @@ class LiveTrader():
         self.model = Net()
         print("Loading Model")
 
-        checkpoint = load_model("experiment://c9d790db2d0544c7a0fcd25ae43ecb90/4_layer_w_volume_classic_CNN_mse_target3")
+        checkpoint = load_model("experiment://c9d790db2d0544c7a0fcd25ae43ecb90/4_layer_w_volume_classic_CNN_mse_target3",map_location=torch.device('cpu'))
         self.model.load_state_dict(checkpoint['model_state_dict'])
         epoch = checkpoint['epoch']
         self.model.to(device)
