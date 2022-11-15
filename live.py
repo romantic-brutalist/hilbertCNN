@@ -101,14 +101,19 @@ class LiveTrader():
         self.trade_available=True
         print("Initialized")
     def send_slack(self,msg):
-        bashCommand = '''curl -X POST -H 'Content-type: application/json' --data 
-        "{'text':'Hello, World!'}" 
-        https://hooks.slack.com/services/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'''
-        bs = bashCommand.split()
-        bs= bs[:4] + [bs[4]+bs[5]] +[bs[-4]]+ [json.dumps(msg)] + bs[-1:]
-        #bs[-2]="\"" + bs[-2][1:-1] + "\""
-        process = subprocess.Popen(bs, stdout=subprocess.PIPE)
-        output, error = process.communicate()
+        webhook_url = "https://hooks.slack.com/services/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"
+        slack_data = {
+            "text": "New Action!!!",
+            "attachments": [
+                {"text":f"{i}:{message[i]}"} for i in message 
+            ]
+        }
+
+        response = requests.post(
+            webhook_url, data=json.dumps(slack_data),
+            headers={'Content-Type': 'application/json'}
+        )
+
     def live_call(self,_timestamp,_open,_high,_low,_close):
         #print(f"Open Position is {self.open_position}")
         if not self.trade_available:
@@ -238,68 +243,17 @@ class LiveTrader():
 
         self.position_history.append(self.pos_dict_open)
         msg={
-            "blocks": [
-                {
-                    "type": "section",
-                    "fields": [
-                        {
-                           
-                            "type": "plain_text",
-                            "text": "Open Position",
-                            "emoji": False
-                        },
-                        {
-                            "type": "plain_text",
-                            "text": f"Type: {self.current_position['type']}",
-                            "emoji": False
-                        },
-                        {
-                            "type": "plain_text",
-                            "text": f"Margin: {self.margin}",
-                            "emoji": False
-                        },
-                    ]
-                },
-                {
-                    "type": "section",
-                    "fields": [
-                        
-                        {
-                            "type": "plain_text",
-                            "text": f"Time: {pd.to_datetime(datetime.datetime.fromtimestamp(_timestamp/1000.0))}",
-                            "emoji": False
-                        },
-                        {
-                            "type": "plain_text",
-                            "text": f"Price: {_close}",
-                            "emoji": False
-                        },
-                        
-                        {
-                            "type": "plain_text",
-                            "text": f"StopLoss: {self.current_position['stop_loss']}",
-                            "emoji": False
-                        },
-                        {
-                            "type": "plain_text",
-                            "text": f"TakeProfit: {self.current_position['take_profit']}",
-                            "emoji": False
-                        },
-                        
-                        {
-                            "type": "plain_text",
-                            "text": f"StopLossRatio: {self.current_position['stop_loss_ratio']}",
-                            "emoji": False
-                        },
-                        {
-                            "type": "plain_text",
-                            "text": f"TakeProfitRatio: {self.current_position['take_profit_ratio']}",
-                            "emoji": False
-                        },
-                    ]
-                }
-            ]
-        }
+            
+                            "Action": "Open Position",
+                            "Type":f" {self.current_position['type']}",
+                            "Margin":f" {self.margin}",
+                            "Time":f" {pd.to_datetime(datetime.datetime.fromtimestamp(_timestamp/1000.0))}",
+                            "Price":f" {_close}",
+                            "StopLoss":f" {self.current_position['stop_loss']}",
+                            "TakeProfit":f" {self.current_position['take_profit']}",
+                            "StopLossRatio":f" {self.current_position['stop_loss_ratio']}",
+                            "TakeProfitRatio":f" {self.current_position['take_profit_ratio']}",
+                        }
         self.send_slack(msg)
         self.pos_dict_open={}
         
@@ -351,61 +305,21 @@ class LiveTrader():
             self.pos_dict_closed["stop_loss_ratio"] = self.current_position["stop_loss_ratio"]
             self.position_history.append(self.pos_dict_closed)
             msg={
-                "blocks": [
-                    {
-                        "type": "section",
-                        "fields": [
-                            {
+            
+                            "Action": "Close Position",
+                            "Type":f" {self.current_position['type']}",
+                            "Margin":f" {self.margin}",
+                            "Result":f"{self.pos_dict_closed['result']}"
+                            "Time":f" {pd.to_datetime(datetime.datetime.fromtimestamp(_timestamp/1000.0))}",
+                            "Price":f" {_close}",
+                            
 
-                                "type": "plain_text",
-                                "text": "Close Position",
-                                "emoji": False
-                            },
-                            {
-                                "type": "plain_text",
-                                "text": f"Type: {self.current_position['type']}",
-                                "emoji": False
-                            },
-                            {
-                                "type": "plain_text",
-                                "text": f"Time: {pd.to_datetime(datetime.datetime.fromtimestamp(_timestamp/1000.0))}",
-                                "emoji": False
-                            },
-                            {
-                                "type": "plain_text",
-                                "text": f"Margin: {self.margin}",
-                                "emoji": False
-                            },
-                            {
-                                "type": "plain_text",
-                                "text": f"Result: {self.pos_dict_closed['result']}",
-                                "emoji": False
-                            },
-                            {
-                                "type": "plain_text",
-                                "text": f"Price: {self.pos_dict_closed['price']}",
-                                "emoji": False
-                            }
-                        ]
-                    }
-                ]
-            }
+                        }
             self.send_slack(msg)
             msg={
-                "blocks": [
-                    {
-                        "type": "section",
-                        "fields": [
-                            {
-
-                                "type": "plain_text",
-                                "text": f"Profit Margin: {self.profit_margin}",
-                                "emoji": False
+                "Profit Margin":self.profit_margin,
                             }
-                        ]
-                    }
-                ]
-            }
+                        
             self.send_slack(msg)
             if self.verbose==2:
                 print("\nClosed Position", self.pos_dict_closed)
