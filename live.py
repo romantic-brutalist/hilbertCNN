@@ -309,8 +309,8 @@ class LiveTrader():
                             "Action": "Close Position",
                             "Type":f" {self.current_position['type']}",
                             "Margin":f" {self.margin}",
-                            "Result":f"{self.pos_dict_closed['result']}"
-                            "Time":f" {pd.to_datetime(datetime.datetime.fromtimestamp(_timestamp/1000.0))}",
+                            "Result":f"{self.pos_dict_closed['result']}",
+                            "Time":f"{pd.to_datetime(datetime.datetime.fromtimestamp(_timestamp/1000.0))}",
                             "Price":f" {_close}",
                             
 
