@@ -16,7 +16,7 @@ import websocket
 import json
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-device = torch.device('cpu')
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 os.environ["COMET_API_KEY"] = "uM0HPEvEu6OyX3dTEuB4Fihgz"
 
@@ -103,7 +103,7 @@ class LiveTrader():
         self.trade_available=True
         print("Initialized")
     def send_slack(self,msg):
-        client = WebClient(token="xoxb-2444560597751-2482975908464-pgSw5TUmE3A8tRm8NmyiJiFJ")
+        client = WebClient(token="xoxb-2444560597751-2482975908464-4cwO47LnBcb3bhXrIHzsILiR")
 
         slack_data = {
             "text": "New Action!!!",
