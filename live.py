@@ -103,7 +103,7 @@ class LiveTrader():
         self.trade_available=True
         print("Initialized")
     def send_slack(self,msg):
-        client = WebClient(token="xoxb-2444560597751-2482975908464-4cwO47LnBcb3bhXrIHzsILiR")
+        client = WebClient(token="xoxb-2444560597751-2482975908464-AxAJvTd7gr9YpFp8RaPfKpSV")
 
         slack_data = {
             "text": "New Action!!!",
