@@ -101,7 +101,7 @@ class LiveTrader():
         self.trade_available=True
         print("Initialized")
     def send_slack(self,msg):
-        webhook_url = "https://hooks.slack.com/services/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"
+        webhook_url = "https://hooks.slack.com/services/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"
         slack_data = {
             "text": "New Action!!!",
             "attachments": [
